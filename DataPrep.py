@@ -14,8 +14,8 @@ import pandas as pd
 
 df = pd.read_excel("Data/Data_Campbell.xlsx", sheet_name= "DataActual")
 
-grouped_location = df[["Location_Name", "Ship_Date", "Ship_Qty"]].\
-    groupby(["Location_Name", "Ship_Date"]).sum()
+grouped_location = df[["Location_ID", "Ship_Date", "Ship_Qty"]].\
+    groupby(["Location_ID", "Ship_Date"]).sum()
     
 grouped_division = df[["Division", "Ship_Date", "Ship_Qty"]].\
     groupby(["Division", "Ship_Date"]).sum()
@@ -27,18 +27,21 @@ t["scaling_factor"] = t["Total_Qty_Item"] / t["Total_Qty_Division"] #Scaling fac
 
 t = t.sort_values(["Total_Qty_Item", "Division"], ascending=False)\
     .reset_index().drop("index", axis=1)
-top_10 = {}
+top_5 = {}
 divisions = list(t["Division"].unique())
 
 for div in divisions:
-    sku = list(t[t["Division"] == div]["Item_ID"][:10])
-    top_10[div] = sku
+    sku = list(t[t["Division"] == div]["Item_ID"][:5])
+    top_5[div] = sku
+    
+grouped_location.to_csv("Data/Location.csv")
+grouped_division.to_csv("Data/Division.csv")
     
 # 1. use grouped_location for forecasting based on location aggregation
 # 2. use grouped_division for forecasting based on division aggregation
-# 3. top_10 - dictionary of top 10 items by demand contribution in their respective divisions
+# 3. top_5 - dictionary of top 5 items by demand contribution in their respective divisions
 # 4. The idea is to forecast based on 1 and 2 then dissagregate into the respective item level forecast values based on scaling_factor
-# 5. Calculate RMSE, MAPE, cov.. whatever for these 10 items for each division to compare our model accuracy
+# 5. Calculate RMSE, MAPE, cov.. whatever for these 5 items for each division to compare our model accuracy
 
 
 # 6. Perform time-series clustering and use the new groups to do forecasting
