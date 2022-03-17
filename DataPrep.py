@@ -6,13 +6,16 @@ Created on Tue Mar 15 22:36:45 2022
 """
 
 import pandas as pd
-#import numpy as np
+import numpy as np
+import datetime
 #import matplotlib.pyplot as plt
 #import seaborn as sns
 
 #%matplotlib inline
 
 df = pd.read_excel("Data/Data_Campbell.xlsx", sheet_name= "DataActual")
+df["Ship_Date"] = pd.to_datetime(df["Ship_Date"])
+df = df[df["Ship_Date"] >= datetime.datetime(2019,1,1)]
 
 grouped_location = df[["Location_ID", "Ship_Date", "Ship_Qty"]].\
     groupby(["Location_ID", "Ship_Date"]).sum()
@@ -27,6 +30,7 @@ t["scaling_factor"] = t["Total_Qty_Item"] / t["Total_Qty_Division"] #Scaling fac
 
 t = t.sort_values(["Total_Qty_Item", "Division"], ascending=False)\
     .reset_index().drop("index", axis=1)
+    
 top_5 = {}
 divisions = list(t["Division"].unique())
 
@@ -36,6 +40,12 @@ for div in divisions:
     
 grouped_location.to_csv("Data/Location.csv")
 grouped_division.to_csv("Data/Division.csv")
+
+
+##### Time Series Clustering ####
+data_ts = df.groupby(["Item_ID", "Ship_Date"])["Ship_Qty"].sum().reset_index()
+
+data_ts.isna().sum()
     
 # 1. use grouped_location for forecasting based on location aggregation
 # 2. use grouped_division for forecasting based on division aggregation
