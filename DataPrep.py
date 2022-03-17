@@ -2,7 +2,7 @@
 """
 Created on Tue Mar 15 22:36:45 2022
 
-@author: Yikes
+@author: Yikes!!
 """
 """
 # 1. use grouped_location for forecasting based on location aggregation
@@ -85,19 +85,19 @@ data_ts["Qty_Normalized"] = val
 
 from dtaidistance import dtw, clustering
 from dtaidistance import dtw_visualisation as dtwvis
-from scipy.cluster.hierarchy import single, dendrogram, fcluster, complete
+from scipy.cluster.hierarchy import single, dendrogram, fcluster, complete, ward
 from tslearn.clustering import TimeSeriesKMeans
 from sklearn.metrics import silhouette_score
 
 s1 = np.array(data_ts[data_ts["Item_ID"] == 1269265]["Qty_Normalized"])[:12]
 s2 = np.array(data_ts[data_ts["Item_ID"] == 1270709]["Qty_Normalized"])[:12]
 path = dtw.warping_path(s1, s2)
-dtwvis.plot_warping(s1, s2, path, filename="dtw_example1.png")
+dtwvis.plot_warping(s1, s2, path, filename="Images/dtw_example1.png")
 
 s3 = np.sin(np.arange(0, 20, .5))
 s4 = np.sin(np.arange(0, 20, .5) - 2)
 path = dtw.warping_path(s3, s4)
-dtwvis.plot_warping(s3, s4, path, filename="dtw_example2.png")
+dtwvis.plot_warping(s3, s4, path, filename="Images/dtw_example2.png")
 
 """
 Clustering is used to find groups of similar instances (e.g. time series, sequences). Such a clustering can be used to:
@@ -112,25 +112,26 @@ dtw_ds = dtw.distance_matrix_fast(ts_pivot.to_numpy())
 Heirarchical clustering - dtw single linkage 
 """
 
-model1=complete(dtw_ds)
+model1=ward(dtw_ds)
 fig = plt.figure(figsize=(16, 8))
 dn1 = dendrogram(model1)
-plt.title("Dendrogram for single-linkage with correlation distance")
-plt.show()
-cluster_heirarchical = list(fcluster(model1, 3, criterion='maxclust'))
+plt.title("Dendrogram for ward-linkage with correlation distance")
+plt.savefig("Images/agglomerativeClusteringWard.png")
+cluster_heirarchical = list(fcluster(model1, 4, criterion='maxclust'))
 silhouette_score(ts_pivot, cluster_heirarchical)
-
+plt.clf()
 
 model2 = clustering.Hierarchical(dtw.distance_matrix_fast, {})
 cluster_idx = model2.fit(ts_pivot.to_numpy())
 model3 = clustering.HierarchicalTree(model2)
 cluster_idx = model3.fit(ts_pivot.to_numpy())
 
+fig = plt.figure(figsize=(16, 8))
 dn2 = dendrogram(model3.linkage)
-plt.show()
-
+plt.title("Dendrogram for default-linkage with correlation distance")
+plt.savefig("Images/agglomerativeClusteringDefault.png")
 cluster_idx = list(fcluster(model3.linkage, 1.5, criterion="distance"))
-
+plt.clf()
 """
 KMeans clustering based on dtw 
 """
@@ -138,9 +139,12 @@ KMeans clustering based on dtw
 #Silhouette score
 ssd=[]
 for i in range(2,9):
-    kmeans=TimeSeriesKMeans(n_clusters=i, metric="softdtw",\
-                            max_iter=5,max_iter_barycenter=5,\
-                            metric_params={"gamma": .5}, random_state=0)
+    kmeans=TimeSeriesKMeans(n_clusters=i,\
+                            metric="dtw",\
+                            max_iter=5,\
+                            max_iter_barycenter=5,\
+                            #metric_params={"gamma": .5},\
+                            random_state=0)
     kmeans.fit(ts_pivot)
     cluster_labels = kmeans.labels_
     silhouette_avg = silhouette_score(ts_pivot, cluster_labels)
@@ -148,26 +152,55 @@ for i in range(2,9):
     ssd.append([i,silhouette_avg])
     
 plt.plot(pd.DataFrame(ssd)[0], pd.DataFrame(ssd)[1])
-plt.show()
+plt.savefig("Images/kmeansSilhouetteScore.png")
+plt.clf()
 
 #Elbow curve
 ssd = []
 for num_clusters in list(range(1,8)):
-    model_clus = TimeSeriesKMeans(n_clusters = num_clusters, metric="softdtw",\
-                                  max_iter=5,max_iter_barycenter=5,\
-                                  metric_params={"gamma": .5}, random_state=0)
+    model_clus = TimeSeriesKMeans(n_clusters = num_clusters,\
+                                  metric="dtw",\
+                                  max_iter=5,\
+                                  max_iter_barycenter=5,\
+                                  #metric_params={"gamma": .5},\
+                                  random_state=0)
     model_clus.fit(ts_pivot)
     ssd.append((num_clusters,model_clus.inertia_))
 
 plt.plot(pd.DataFrame(ssd)[0], pd.DataFrame(ssd)[1])
-plt.show()
+plt.savefig("Images/kmeansElbowCurve.png")
+plt.clf()
 
-
-km_sdtw = TimeSeriesKMeans(n_clusters=3, metric="softdtw", max_iter=5,\
+km_sdtw = TimeSeriesKMeans(n_clusters=4,\
+                           metric="dtw",\
+                           max_iter=5,\
                            max_iter_barycenter=5,\
-                           metric_params={"gamma": .5},\
+                           #metric_params={"gamma": .5},\
                            random_state=0).fit(ts_pivot)    
 cluster_kmeans = list(km_sdtw.predict(ts_pivot))
 
 
-
+def plot_clusters(df, cluster_labels, title, row_mx=2, column_mx=2):
+    fig, axs = plt.subplots(row_mx, column_mx, figsize=(25,25))
+    fig.suptitle('Clusters')
+    loc = []
+    row = 0
+    column = 0
+    for i in set(cluster_labels):
+        loc = [x for x,y in enumerate(cluster_labels) if y==i]
+        for j in range(10):
+            try:
+                axs[row, column].plot(df.iloc[loc[j],:].values, c="gray", alpha=0.4)
+            except:
+                axs[row, column].plot(df.iloc[loc,:].values, c="gray", alpha=0.4)
+        if j>1:
+            axs[row, column].plot(np.average(np.vstack(df.iloc[loc,:].values), axis=0),c="red")        
+        column+=1
+        if column>=column_mx:
+            row+=1
+            column=0
+    plt.savefig(f'Images/{title}.png')
+    
+plot_clusters(ts_pivot, cluster_kmeans, "kmeans")
+plot_clusters(ts_pivot, cluster_heirarchical, "agglomerativeWard")
+plot_clusters(ts_pivot, cluster_idx, "agglomerativeDefault", 3, 2)
