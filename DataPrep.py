@@ -32,7 +32,7 @@ df = df[df["Ship_Date"] >= datetime.datetime(2019,1,1)] #Only 2019
 df["Ship_Qty"].describe() # No negatives
 df.isna().sum() # No nulls
     
-data_ts = df.groupby(["Item_ID", "Ship_Date"])["Ship_Qty"].sum().reset_index()
+data_ts = df.groupby(["Item_ID", "Ship_Date", "Division"])["Ship_Qty"].sum().reset_index()
 
 # drop items without 52 weeks of demand data
 # For the sake of the simplicity I'm ignoring all items without 52 weeks of demand
@@ -44,14 +44,14 @@ data_ts = data_ts[~data_ts["Item_ID"].isin(item_remove)]
 
 #----------------------END----------------------
 
-grouped_location = df[["Location_ID", "Ship_Date", "Ship_Qty"]].\
-    groupby(["Location_ID", "Ship_Date"]).sum()
+#grouped_location = df[["Location_ID", "Ship_Date", "Ship_Qty"]].\
+    #groupby(["Location_ID", "Ship_Date"]).sum()
     
-grouped_division = df[["Division", "Ship_Date", "Ship_Qty"]].\
+grouped_division = data_ts[["Division", "Ship_Date", "Ship_Qty"]].\
     groupby(["Division", "Ship_Date"]).sum()
 
-t1 = df.groupby(["Item_ID", "Division"]).agg(Total_Qty_Item = ("Ship_Qty", "sum")).reset_index()
-t2 = df.groupby(["Division"]).agg(Total_Qty_Division = ("Ship_Qty", "sum")).reset_index()
+t1 = data_ts.groupby(["Item_ID", "Division"]).agg(Total_Qty_Item = ("Ship_Qty", "sum")).reset_index()
+t2 = data_ts.groupby(["Division"]).agg(Total_Qty_Division = ("Ship_Qty", "sum")).reset_index()
 t = pd.merge(t1,t2,how='left',on="Division")
 t["Scaling_Factor_Division"] = t["Total_Qty_Item"] / t["Total_Qty_Division"] #Scaling factor as percentage of actual cummulative demand
 
@@ -69,7 +69,7 @@ for div in divisions:
     top_5[div] = sku
     
 #grouped_location.to_csv("Data/Location.csv")
-grouped_division.to_csv("Data/Division.csv")
+grouped_division.reset_index().rename(columns={"Division":"Division_ID"}).to_csv("Data/Division.csv", index=False)
 
 
 ##### Time Series Clustering ####
@@ -82,7 +82,7 @@ for item in data_ts["Item_ID"].unique():
     Min-Max Scaling
     """
     x = np.array(data_ts[data_ts["Item_ID"] == item]["Ship_Qty"])
-    x = (x-max(x))/(max(x)-min(x))
+    x = (x-min(x))/(max(x)-min(x))
     val.extend(x)
 data_ts["Qty_Normalized"] = val
 
@@ -141,7 +141,8 @@ KMeans clustering based on dtw
 """
 
 #Silhouette score
-ssd=[]
+ssd1=[]
+ssd2=[]
 for i in range(2,9):
     kmeans=TimeSeriesKMeans(n_clusters=i,\
                             metric="dtw",\
@@ -153,32 +154,22 @@ for i in range(2,9):
     cluster_labels = kmeans.labels_
     silhouette_avg = silhouette_score(ts_pivot, cluster_labels, metric="dtw")
     print("For n_clusters={0}, the silhouette score is {1}".format(i, silhouette_avg))
-    ssd.append([i,silhouette_avg])
+    ssd1.append([i,silhouette_avg])
+    ssd2.append((i,kmeans.inertia_))
     
-plt.plot(pd.DataFrame(ssd)[0], pd.DataFrame(ssd)[1])
+plt.plot(pd.DataFrame(ssd1)[0], pd.DataFrame(ssd1)[1])
 plt.savefig("Images/kmeansSilhouetteScore.png")
 plt.clf()
 
-#Elbow curve
-ssd = []
-for num_clusters in list(range(1,8)):
-    model_clus = TimeSeriesKMeans(n_clusters = num_clusters,\
-                                  metric="dtw",\
-                                  max_iter=5,\
-                                  max_iter_barycenter=5,\
-                                  #metric_params={"gamma": .5},\
-                                  random_state=0)
-    model_clus.fit(ts_pivot)
-    ssd.append((num_clusters,model_clus.inertia_))
-
-plt.plot(pd.DataFrame(ssd)[0], pd.DataFrame(ssd)[1])
+# Elbow Curve
+plt.plot(pd.DataFrame(ssd2)[0], pd.DataFrame(ssd2)[1])
 plt.savefig("Images/kmeansElbowCurve.png")
 plt.clf()
 
 km_sdtw = TimeSeriesKMeans(n_clusters=4,\
                            metric="dtw",\
-                           max_iter=5,\
-                           max_iter_barycenter=5,\
+                           max_iter=10,\
+                           max_iter_barycenter=10,\
                            #metric_params={"gamma": .5},\
                            random_state=0).fit(ts_pivot)    
 cluster_kmeans = list(km_sdtw.predict(ts_pivot))
@@ -225,7 +216,7 @@ plot_clusters(ts_pivot, cluster_idx, "agglomerativeDefault", 3, 2)
 # So our cluster based  forecasting will be based on this one group
 
 cluster_result = pd.concat((pd.Series(ts_pivot.index), pd.Series(cluster_kmeans, name="Cluster_ID")), axis=1)
-cluster_result = pd.merge(cluster_result, df.groupby("Item_ID").agg(Total_Qty_Item = ("Ship_Qty", "sum")).reset_index(),\
+cluster_result = pd.merge(cluster_result, data_ts.groupby("Item_ID").agg(Total_Qty_Item = ("Ship_Qty", "sum")).reset_index(),\
                           on="Item_ID")
 cluster_result = pd.merge(cluster_result,cluster_result.groupby("Cluster_ID")\
                          .agg(Total_Qty_Cluster = ("Total_Qty_Item", "sum")).reset_index(), on="Cluster_ID")
@@ -233,19 +224,19 @@ cluster_result = pd.merge(cluster_result,cluster_result.groupby("Cluster_ID")\
 cluster_result["Cluster_Scaling_Factor"] = cluster_result["Total_Qty_Item"] / cluster_result["Total_Qty_Cluster"]
 
 df_scale = pd.merge(t, cluster_result, on="Item_ID")[["Item_ID", "Division", "Cluster_ID",\
-                                                      "scaling_factor", "Cluster_Scaling_Factor"]]
+                                                      "Scaling_Factor_Division", "Cluster_Scaling_Factor"]]
 
-df_scale.rename(columns= {"Division":"Division_ID", "scaling_factor":"Division_Scaling_Factor"}, inplace=True)
+df_scale.rename(columns= {"Division":"Division_ID", "Scaling_Factor_Division":"Division_Scaling_Factor"}, inplace=True)
 items_include = []
 for i in list(top_5.values()):
     items_include.extend(i) 
 df_scale = df_scale[df_scale["Item_ID"].isin(items_include)]
 df_scale.to_csv("Data/Scaling.csv", index=False)
 
-df[df["Item_ID"].isin(items_include)].groupby(["Item_ID","Ship_Date"])\
+data_ts[data_ts["Item_ID"].isin(items_include)].groupby(["Item_ID","Ship_Date"])\
     .agg(Ship_Qty = ("Ship_Qty", "sum")).reset_index()\
     .to_csv("Data/Item.csv", index=False)
 
-pd.merge(df, cluster_result[["Item_ID", "Cluster_ID"]], on="Item_ID").groupby(["Cluster_ID", "Ship_Date"])\
+pd.merge(data_ts, cluster_result[["Item_ID", "Cluster_ID"]], on="Item_ID").groupby(["Cluster_ID", "Ship_Date"])\
     .agg(Ship_Qty = ("Ship_Qty", "sum")).reset_index()\
     .to_csv("Data/Cluster.csv", index=False)
