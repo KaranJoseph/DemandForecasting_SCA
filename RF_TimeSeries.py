@@ -123,9 +123,25 @@ results_cluster["Agg_Level"] = "Cluster"
 results_df = pd.concat([results_division, results_cluster], axis=0).reset_index().drop(columns='index')
 results_df["Forecast"] = "RandomForest"
 results_df = results_df[["Item_ID", "Agg_Level", "Forecast", "RMSE", "MAPE"]]
-results_df.to_csv("RandomForest_out.csv", index=False)
+results_df.to_csv("Data/RandomForest_Result.csv", index=False)
 
 
+t1 = df_item_combined[["Item_ID", "Ship_Date", "Ship_Qty", "Qty_Cluster"]].rename({"Qty_Cluster":"Pred"}, axis=1)
+t1["Agg_Level"] = "Cluster"
+t1["Forecast"] = "RandomForest"
+t2 = df_item_combined[["Item_ID", "Ship_Date", "Ship_Qty", "Qty_Division"]].rename({"Qty_Division":"Pred"}, axis=1)
+t2["Agg_Level"] = "Division"
+t2["Forecast"] = "RandomForest"
+
+pd.concat((t1,t2), axis=0).reset_index().drop("index", axis=1).to_csv("Data/RandomForest_Out.csv", index=False)
+
+
+"""
+#-----------------------------------------------
+train_len = datetime.datetime(2019,11,1)
+data_out = df_item.copy().rename(columns = {"Ship_Qty":"Train"})
+data_out["Test"] = data_out.apply(lambda x: x.Train if x.Ship_Date >= train_len else np.nan, axis=1)
+data_out["Train"] = data_out.apply(lambda x: x.Train if x.Ship_Date < train_len else np.nan, axis=1)
 
 
 #---------------------------------------------------------PLOTS------------------------------
@@ -181,6 +197,7 @@ plt.clf()
 
 df_division["Ship_Date"] = pd.to_datetime(df_division["Ship_Date"])
 df = pd.merge(df_division, df_division_rf[["Division_ID", "Ship_Date", "Qty_Predicted"]],\
+              
               on=["Division_ID","Ship_Date"], how="outer")
    
 df.set_index("Ship_Date", inplace=True)
@@ -195,7 +212,7 @@ for i,j in enumerate(df["Division_ID"].unique()):
 fig1.savefig('RandomForest3.png')
 plt.clf()
     
-
+"""
 
 
 
