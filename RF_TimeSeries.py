@@ -37,7 +37,20 @@ def calculate_mape(actual,predicted):
 
 def random_forest(X_train, y_train, X_test):
     """
-    
+    Parameters
+    ----------
+    X_train : DataFrame
+        Predictor variables for model input - train data - in sample
+    y_train : DataFrame
+        Target variable for model input - train data - in sample
+    X_test : DataFrame
+        Predictor variables for model input - test data - out of sample 
+
+    Returns
+    -------
+    y_pred : Series
+        Out from the random forest model for input X_test - test set - out of sample prediction
+
     """
     rfr = RandomForestRegressor(n_estimators=100, random_state=1)
     rfr.fit(X_train, y_train)
@@ -46,9 +59,21 @@ def random_forest(X_train, y_train, X_test):
 
 def random_forest_prep(df, level):
     """
+    Parameters
+    ----------
+    df : DataFrame
+        Receives the quantity data by each item and processes it for input to the random_forest model
     
+    level : String
+        Level of aggregation being called : Division or Cluster
+        
+    Returns
+    -------
+    out : DataFrame 
+        Output from random_forest model
     
     """
+    
     df["Ship_Date"] = pd.to_datetime(df["Ship_Date"])
     train_len = datetime.datetime(2019,11,1)
     for i in range(8,0,-1):
@@ -102,6 +127,9 @@ df_item_combined = pd.merge(df_item_cluster, df_item_division, on=["Item_ID", "S
 df_item_combined = pd.merge(df_item_combined, df_item, on=["Item_ID","Ship_Date"])
 
 def results_rf(df, level):
+    """
+    Combining the results from cluster based and division based random_forest models
+    """
     results = {}
     col = "Qty_"+level
     for item in df.Item_ID.unique():
