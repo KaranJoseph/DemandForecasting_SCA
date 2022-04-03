@@ -52,9 +52,19 @@ def random_forest(X_train, y_train, X_test):
         Out from the random forest model for input X_test - test set - out of sample prediction
 
     """
-    rfr = RandomForestRegressor(n_estimators=100, random_state=1)
+    rfr = RandomForestRegressor(n_estimators=1000, max_depth=10, min_samples_leaf=4, min_samples_split=10, random_state=1)
     rfr.fit(X_train, y_train)
-    y_pred = rfr.predict(X_test)
+    
+    index_start = X_test.index[0]
+    y_pred = []
+    for i in range(X_test.shape[0]):
+        pred = rfr.predict(pd.DataFrame(X_test.iloc[i, :]).T)[0]
+        y_pred.append(pred)
+        for j in range(1,9):
+            try:
+                X_test.at[index_start+i+j ,"t-"+str(j)] = pred
+            except:
+                continue
     return y_pred
 
 def random_forest_prep(df, level):

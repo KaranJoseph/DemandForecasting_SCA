@@ -1,11 +1,10 @@
 Item_ID,Agg_Level,Forecast,RMSE,MAPE
-1267133,Division,RandomForest,1365.2,13.34
-1267746,Cluster,RandomForest,19085.58,16.03
-1269603,Cluster,RandomForest,3197.01,7.23
-1269685,Cluster,RandomForest,4254.67,38.09
-1267908,Cluster,RandomForest,1058.16,7.65
+1267261,Division,RandomForest,6658.3,10.91
+1267319,Division,RandomForest,4530.14,9.67
+1267908,Cluster,RandomForest,995.11,7.55
+1267133,Cluster,RandomForest,1374.31,12.46
+1267375,Cluster,RandomForest,2289.47,22.18
 1267128,Division,Holt Winter,2319.78,16.36
-1267375,Division,Holt Winter,3168.2,23.66
 1268762,Division,Prophet,2714.14,63.76
 1269810,Division,Prophet,5099.8,34.62
 1269903,Division,Holt Winter,1025.34,54.15
@@ -15,7 +14,8 @@ Item_ID,Agg_Level,Forecast,RMSE,MAPE
 1269237,Cluster,SARIMA,348.32,18.42
 1269265,Cluster,SARIMA,208.66,12.01
 1269461,Cluster,SARIMA,4624.26,36.55
-1267261,Cluster,Prophet,8633.55,11.12
-1267319,Cluster,Prophet,5469.92,11.0
+1269685,Cluster,SARIMA,4553.08,38.63
 1267504,Cluster,Prophet,7586.34,16.7
+1267746,Cluster,Prophet,20179.84,17.18
+1269603,Cluster,Prophet,3789.93,8.67
 1270707,Cluster,Prophet,5885.12,38.64
