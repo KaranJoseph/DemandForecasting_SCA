@@ -184,7 +184,8 @@ def Prophet_Forecasting(training_dataset,testing_dataset):
   df_train = training_dataset.rename({'Ship_Date': 'ds', 'Ship_Qty': 'y'}, axis=1)
   df_test=pd.DataFrame()
   df_test["ds"]=testing_dataset["Ship_Date"]
-  model=Prophet()
+  model=Prophet(weekly_seasonality=True, yearly_seasonality=False, daily_seasonality=False)
+  model.add_seasonality(name='weekly', period=8, fourier_order=3)
   model.fit(df_train)
   testing_dataset["Prediction_Prophet"]=model.predict(df_test)["yhat"]
   return testing_dataset

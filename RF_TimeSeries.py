@@ -52,7 +52,7 @@ def random_forest(X_train, y_train, X_test):
         Out from the random forest model for input X_test - test set - out of sample prediction
 
     """
-    rfr = RandomForestRegressor(n_estimators=1000, max_depth=10, min_samples_leaf=4, min_samples_split=10, random_state=1)
+    rfr = RandomForestRegressor(n_estimators=1000, random_state=1)
     rfr.fit(X_train, y_train)
     
     index_start = X_test.index[0]
