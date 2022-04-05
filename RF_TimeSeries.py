@@ -60,7 +60,7 @@ def random_forest(X_train, y_train, X_test):
     for i in range(X_test.shape[0]):
         pred = rfr.predict(pd.DataFrame(X_test.iloc[i, :]).T)[0]
         y_pred.append(pred)
-        for j in range(1,9):
+        for j in range(1,6):
             try:
                 X_test.at[index_start+i+j ,"t-"+str(j)] = pred
             except:
@@ -86,7 +86,7 @@ def random_forest_prep(df, level):
     
     df["Ship_Date"] = pd.to_datetime(df["Ship_Date"])
     train_len = datetime.datetime(2019,11,1)
-    for i in range(8,0,-1):
+    for i in range(5,0,-1):
         df["t-"+str(i)] = df["Ship_Qty"].shift(i)
     df.dropna(inplace=True)
     train = df[df["Ship_Date"]<train_len].copy()

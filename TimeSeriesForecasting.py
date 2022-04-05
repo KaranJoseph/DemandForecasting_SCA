@@ -144,7 +144,7 @@ def SARIMAX_Forecasting(training_dataset,testing_dataset,order,seasonal_order):
   testing_dataset["Prediction_Sarima"]= model_fit.predict(start=44,end=52).reset_index().drop("index",1)
   return testing_dataset
 
-attribute_dict={"US-RTL":[[1,1,0],[3,2,1,8]],"CA-FS":[[0,1,2],[3,2,1,8]],"US-FS":[[1,1,0],[3,2,1,8]],"CA-RTL":[[0,1,2],[3,2,1,8]]}
+attribute_dict={"US-RTL":[[1,1,0],[1, 2, 0, 13]],"CA-FS":[[0,1,2],[1, 2, 0, 13]],"US-FS":[[1,1,0],[1, 2, 0, 13]],"CA-RTL":[[0,1,2],[1, 2, 0, 13]]}
 
 
 df_test=pd.DataFrame()
@@ -281,7 +281,8 @@ for item in items:
 
 """----------------------------------------SARIMA---------------------------"""
 
-attribute_cluster_dict={0:[[1,1,0],[3,2,1,8]],1:[[0,1,2],[3,2,1,8]],2:[[1,1,0],[3,2,1,8]],3:[[0,1,2],[3,2,1,8]]}
+attribute_cluster_dict={0:[[0,1,0],[0, 2, 0, 13]],1:[[0,1,1],[1,2,0,13]],2:[[1,1,0],[0,2,0,13]],3:[[1,1,0],[1, 2, 0, 13]]}
+
 
 df_test=pd.DataFrame()
 for cluster in clusters:
