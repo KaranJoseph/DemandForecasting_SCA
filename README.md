@@ -10,7 +10,8 @@ The various evident steps that we have to perform based on the dataset, is to fi
 # Folder Descriptions:
 
 1) Adhoc (Not using in Report) -> Adhoc scripts which we used to check for outliers, initial forecasting, and time-series plots
-2) Codes (Main codes) 
+
+***2) Codes (Main codes)
 	- a) DataPrep.py - Run this script to prepare the division level and cluster level aggregations
 			     - Basic data cleaning, sanity checks, and time-series clustering
 	- b) GridSearch - For finding the attributes of SARIMA ("Donot run the code" - computationally expensive)
@@ -18,11 +19,10 @@ The various evident steps that we have to perform based on the dataset, is to fi
 	- d) TimeSeriesForecasting - Run this script to get the output from all other Forecast techniques used (results and forecasts)
 	- e) InventoryManagement - Use this file to get the InventoryManagementOutput
 					 - Please copy the Inventory.csv downloaded into the **Data Folder** to reflect the changes made
-3) Data - Data Inputs and Outputs
-4) Images - Images used in the report
-5) OutImages - Adhoc checks
+***4) Data - Data Inputs and Outputs
+***5) Images - Images used in the report
+6) OutImages - Adhoc checks
 
-**
-Please refresh the dashboard after running the codes in "Codes" folder to see the output of your changes made
-**
+
+**Please refresh the dashboard after running the codes in "Codes" folder to see the output of your changes made**
 
