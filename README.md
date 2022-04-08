@@ -15,10 +15,9 @@ The various evident steps that we have to perform based on the dataset, is to fi
 2) ***Codes (Main codes)***
 	- a) DataPrep.py - Run this script to prepare the division level and cluster level aggregations
 			     - Basic data cleaning, sanity checks, and time-series clustering
-	- b) GridSearch - For finding the attributes of SARIMA ("Donot run the code" - computationally expensive)
-	- c) RanfomForest_TimeSeries.py - Run this script to get the outputs from RandomForest (results and forecasts)
-	- d) TimeSeriesForecasting - Run this script to get the output from all other Forecast techniques used (results and forecasts)
-	- e) InventoryManagement - Use this file to get the InventoryManagementOutput
+	- b) RandomForest_TimeSeries.py - Run this script to get the outputs from RandomForest (results and forecasts)
+	- c) TimeSeriesForecasting - Run this script to get the output from all other Forecast techniques used (results and forecasts)
+	- d) InventoryManagement - Use this file to get the InventoryManagementOutput
 					 - Please copy the **Inventory.csv** downloaded into the **Data Folder** to reflect the changes made
 4) ***Data - Data Inputs and Outputs***
 5) ***Images - Images used in the report***
