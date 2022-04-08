@@ -102,7 +102,8 @@ knitr::include_graphics("./Images/Random Forest.png")
 
 Also, this method of time-series forecasting requires a technique called walk-forward validation for evaluating the results on the test set. Because you cannot use data which you do not have at the time of prediction when forecasting for the next period. 
 
-**Forecast Disaggregation**
+**Forecast Disaggregation**  
+
 Once the forecasts were calculated at both division and cluster levels, we disaggregated the data to its respective SKU level. This was done using the fixed proportions we calculated based on percentage contributions of each SKU to the total quantity of the aggregation level.  We have only considered one method of disaggregation in this project, but we have identified a scope to experiment with different disaggregation techniques in future extensions of the project. 
 
 ## Inventory Management 
