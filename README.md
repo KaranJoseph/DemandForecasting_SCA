@@ -1,16 +1,17 @@
 # DemandForecasting and InventoryOptimization- Supply Chain Analytics
 
-**Proposal:**
-The goal of the project is to perform demand forecasting at different aggregation levels (product divisions and locations) on the demand data for 2018-2019 of a Food processing Company that sources its products to various distribution centers in the US and Canada. With the improved forecasting models, the company will be able to prepare a better production plan for the next horizon and reduce inventory costs.
+The goal of the project is to develop a demand forecasting tool to find the best levels of aggregation and the best forecasting technique that can be used to predict weekly demands for a leading Food Processing Company based in North America. The company has several warehouses across USA and Canada, which they use to source retailers and distribution centers across North America. As a complementary service, we have also developed an inventory optimization tool using Integer Linear Programming. Our aim is to improve their production plan for the coming horizons by giving them better forecasts and streamline their inventory levels. 
 
-The data we are using has the actual demand history of all the products sold by the company over the years 2018-2019 by SKU and location. We also have an Item Master that describes which item belongs to which division/category of products. To reduce variability in the dataset, we are planning to aggregate the demand by division and location before doing our predictive modeling. We are mainly planning to use multiple forecasting models and then compare the accuracy among them to identify the best models by product divisions and location. 
+The company have given us a partial database, with information concerning the actual demand history (univariate time-series dataset) for all the products manufactured in the year 2019. The data at hand is composed of 2407 SKUs, and each of these items fall into one of 4 unique production division categories (CA-FS, CA-RTL, US-FS, and US-RTL). To decrease the variability in the dataset and computational complexity, the company suggested developing forecast models at aggregated levels and then later disaggregate them to get individual product demands for each SKU’s.  
 
-The various evident steps that we have to perform based on the dataset, is to first clean and aggregate the dataset to the format that we are planning to use in our models. Then we are going to perform descriptive analytics and data visualizations. The final step is to run the data through the different forecasting models and compare the results based on forecasting accuracy...
+Division level category assignment is being made by the company based on business intuition and product sense. But since SKU’s having different trends and seasonality can get aggregated together under the same division, we believe this will decrease the overall influence of the time series components and thereby reducing its forecasting power. From our research we learned that time-series clustering can be an alternative solution to this problem, because this enabled us to group together items having similar demand patterns. Therefore, we are performing demand forecasting on two different levels of aggregation – **1) Division level and 2) Cluster level** – for building our predictive models.  
 
+In order to analyze the forecast results and develop our prescriptive inventory solution, we have used only the top 5 items by quantity from each divisions (20 items in total). We based this idea off the popular Pareto principle, and we have assumed that this will give us a near accurate representation of the overall data. The forecast models were then developed using 80% of data as the train set and the remaining 20% as the test set. The overall performance of models were compared using the test-set and we have used this half of the data for the inventory model. The inventory optimization model was developed using an Integer Linear Programming algorithm for the last 8 weeks of 2019 (test set).   
 
 # Folder Descriptions:
 
-1) Adhoc (Not using in Report) -> Adhoc scripts which we used to check for outliers, initial forecasting, and time-series plots
+1) Adhoc (Not using in Report) -> Adhoc scripts which we used to check for outliers, initial forecasting, and time-series plots.
+*(Please note that the codes in this folder may not run in your system, as it is not structured to be in an executable format - these are some additional codes which is not required for the pipeline)*
 
 2) ***Codes (Main codes)***
 	- a) DataPrep.py - Run this script to prepare the division level and cluster level aggregations
@@ -25,4 +26,5 @@ The various evident steps that we have to perform based on the dataset, is to fi
 
 
 **Please refresh the dashboard after running the codes in "Codes" folder to see the output of your changes made**
+
 
