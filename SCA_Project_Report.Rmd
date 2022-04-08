@@ -111,11 +111,11 @@ Reasonable assumptions were made for inventory holding costs and ordering costs 
 
 $$ Min: Co*\sum_{i=1}^{8} Y_i + Ch*\sum_{i=1}^{8} S_i $$
 **Constraints**
-$$ S_o = 0 $$
+$$ S_0 = 0 $$
 $$ Q_i+S_{i-1} - S_i =D_i$$ 
-$$ Qi <= M*Yi$$     
-$$Yi \in [0,1]$$      
-$$i\in[1,8] $$
+$$ Q_i <= M*Y_i$$     
+$$Y_i \in [0,1]$$      
+$$i \in [1,8]$$
 Since we did not have accurate information about the costs, the prescriptive solution is currently a prototype. However, this is an excellent reference for when the company wishes to implement the solution using the current product costs. 
 
 \newpage
@@ -157,7 +157,7 @@ knitr::include_graphics("./Images/Result6.png")
 ```
 
 
-# 4. Conclusions
+# 4. Conclusion
 For quickly analyzing forecast predictions and inventory management solutions by the company, we have also provided a Power BI dashboard which can be extended to all the products manufactured by them. The Dashboard provides the demand planner with the demand forecasting plot of the best performing model by item. A comparison table consisting of aggregation levels and different forecasting models along with their performance measures (RMSE and MAPE) is provided. Inventory management and several other plots depicting the performance of proposed models are presented in the Dashboard for comprehensive analysis. 
 
 From our analysis, we observed that there is no one fit all forecasting technique that works for every SKUs, but FB-Prophet gave the best result for majority of the SKUs. The different forecasting models can also be combined using an optimal weightage factor to increase the accuracy of prediction even further; but this is beyond the scope of our current project. Moreover, the results also showed that the cluster level aggregation is giving better forecast accuracies. However, we cannot give a conclusive suggestion regarding the best technique and the aggregation level the company should adopt because our models were limited to just a year (52 weeks) of data. To give a more accurate recommendation, we would need to retrain the models with historical data from more years, so that the seasonal patterns and trends can be better represented by the predictive algorithms.  
