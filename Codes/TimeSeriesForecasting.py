@@ -7,7 +7,6 @@ Created on Sun Mar 27 22:11:07 2022
 
 import pandas as pd
 from statsmodels.tsa.seasonal import seasonal_decompose
-from statsmodels.tsa.seasonal import seasonal_decompose 
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing   
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 import datetime
@@ -29,17 +28,11 @@ from scipy.stats.stats import mode
 from statsmodels.tsa.statespace import sarimax
 from pylab import rcParams
 import statsmodels.api as sm
-from statsmodels.tsa.seasonal import seasonal_decompose
-from pylab import rcParams
-import statsmodels.api as sm
-from statsmodels.tsa.seasonal import seasonal_decompose
-from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-from pylab import rcParams
-import statsmodels.api as sm
-from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from fbprophet import Prophet
 
+import os
+os.chdir('..')
 
 ## Data Input
 
@@ -144,6 +137,7 @@ def SARIMAX_Forecasting(training_dataset,testing_dataset,order,seasonal_order):
   testing_dataset["Prediction_Sarima"]= model_fit.predict(start=44,end=52).reset_index().drop("index",1)
   return testing_dataset
 
+#Attributes selected by acf, pacf plots and Gridsearch
 attribute_dict={"US-RTL":[[1,1,0],[1, 2, 0, 13]],"CA-FS":[[0,1,2],[1, 2, 0, 13]],"US-FS":[[1,1,0],[1, 2, 0, 13]],"CA-RTL":[[0,1,2],[1, 2, 0, 13]]}
 
 
@@ -280,7 +274,7 @@ for item in items:
 
 
 """----------------------------------------SARIMA---------------------------"""
-
+#Attributes selected by acf, pacf plots and Gridsearch
 attribute_cluster_dict={0:[[0,1,0],[0, 2, 0, 13]],1:[[0,1,1],[1,2,0,13]],2:[[1,1,0],[0,2,0,13]],3:[[1,1,0],[1, 2, 0, 13]]}
 
 

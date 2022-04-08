@@ -12,6 +12,9 @@ from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 plt.style.use("fivethirtyeight")
 
+import os
+os.chdir('..')
+
 df_item = pd.read_csv("Data/Item.csv")
 df_item["Ship_Date"] = pd.to_datetime(df_item["Ship_Date"])
 df_cluster = pd.read_csv("Data/Cluster.csv")

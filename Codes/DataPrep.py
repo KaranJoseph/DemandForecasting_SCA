@@ -10,8 +10,6 @@ Created on Tue Mar 15 22:36:45 2022
 # 3. top_5 - dictionary of top 5 items by demand contribution in their respective divisions
 # 4. The idea is to forecast based on 1 and 2 then dissagregate into the respective item level forecast values based on scaling_factor
 # 5. Calculate RMSE, MAPE, cov.. whatever for these 5 items for each division to compare our model accuracy
-
-
 # 6. Perform time-series clustering and use the new groups to do forecasting
 # 7. Compare against previous methods to check forecast accuracy
 # 8. Do a min-max inventory system to calculate the cost-benefit for adopting our method
@@ -21,6 +19,8 @@ import numpy as np
 import datetime
 from tslearn.metrics import dtw
 import matplotlib.pyplot as plt
+import os 
+os.chdir('..')
 #import seaborn as sns
 
 #%matplotlib inline
