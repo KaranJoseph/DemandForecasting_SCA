@@ -11,7 +11,7 @@ The various evident steps that we have to perform based on the dataset, is to fi
 # Folder Descriptions:
 
 1) Adhoc (Not using in Report) -> Adhoc scripts which we used to check for outliers, initial forecasting, and time-series plots.
-*(Please note that the codes in this folder may not run in your system as it is not structured to be in an executable format - these are some additional codes which is not required for the pipeline)*
+*(Please note that the codes in this folder may not run in your system, as it is not structured to be in an executable format - these are some additional codes which is not required for the pipeline)*
 
 2) ***Codes (Main codes)***
 	- a) DataPrep.py - Run this script to prepare the division level and cluster level aggregations
@@ -27,3 +27,4 @@ The various evident steps that we have to perform based on the dataset, is to fi
 
 **Please refresh the dashboard after running the codes in "Codes" folder to see the output of your changes made**
 
+- Yikes & Rohit
