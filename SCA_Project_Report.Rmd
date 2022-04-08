@@ -1,12 +1,15 @@
 ---
 title: "Demand Forecasting and Inventory Optimization for a Food Processing Company"
-author: "Karan Joseph, Rohit Deshmukh, Zeid Abdelmoula, Nikhil Bansal"
-date: '2022-04-02'
+author: "Karan Joseph, Rohit Deshmukh, Zied Abdelmoula, and Nikhil Bansal"
+#date: '2022-04-02'
 output: pdf_document
 geometry: "left=2.54cm,right=2.54cm,top=2.54cm,bottom=2.54cm"
 toc: true
 theme: united
 fig_caption: yes
+fontsize: 12pt
+spacing: single
+font-family: Baskerville
 
 header-includes:
  \usepackage{booktabs}
@@ -21,36 +24,37 @@ header-includes:
 knitr::opts_chunk$set(fig.pos = 'H')
 ```
 
+\newpage
 # 1. Introduction
 
-The goal of the project is to develop a demand forecasting tool to find the best level of aggregation and the best forecasting technique that can be used to predict weekly demands for a leading Food Processing Company based in North America. The company has several warehouses across USA and Canada which they use to source retailers and distribution centers across North America. As a complementary service, we have also developed an inventory optimization tool using Integer Linear Programming. Our aim is to improve their production plan for the coming horizons by giving them better forecasts and streamlining their inventory levels. 
+The goal of the project is to develop a demand forecasting tool to find the best levels of aggregation and the best forecasting technique that can be used to predict weekly demands for a leading Food Processing Company based in North America. The company has several warehouses across USA and Canada, which they use to source retailers and distribution centers across North America. As a complementary service, we have also developed an inventory optimization tool using Integer Linear Programming. Our aim is to improve their production plan for the coming horizons by giving them better forecasts and streamline their inventory levels. 
 
-The company has provided us with the actual demand history (univariate time-series dataset) for all products manufactured in the year 2019 to build our analysis. They had manufactured 2407 SKUs in that year and each of these items fell into a unique production division category. To decrease the variability in the dataset and computational complexity, the company suggested developing forecast models at aggregated levels and then later disaggregate them to get individual product demands for each SKU’s.  
+The company have given us a partial database, with information concerning the actual demand history (univariate time-series dataset) for all the products manufactured in the year 2019. The data at hand is composed of 2407 SKUs, and each of these items fall into one of 4 unique production division categories (CA-FS, CA-RTL, US-FS, and US-RTL). To decrease the variability in the dataset and computational complexity, the company suggested developing forecast models at aggregated levels and then later disaggregate them to get individual product demands for each SKU’s.  
 
-Division level category assignment is being made by the company based on business intuition and product sense. Since SKU’s having different trends and seasonality can get aggregated together under the same division, we believe this will decrease the overall influence of time series components and thereby affecting forecast accuracies. From our research we learned that time-series clustering can be an alternative solution to this problem because this will enable us to group together items having similar demand patterns. Therefore, we are performing demand forecasting on two different levels of aggregation – Division level and Cluster level – for building the predictive models.  
+Division level category assignment is being made by the company based on business intuition and product sense. But since SKU’s having different trends and seasonality can get aggregated together under the same division, we believe this will decrease the overall influence of the time series components and thereby reducing its forecasting power. From our research we learned that time-series clustering can be an alternative solution to this problem, because this enabled us to group together items having similar demand patterns. Therefore, we are performing demand forecasting on two different levels of aggregation – **1) Division level and 2) Cluster level** – for building our predictive models.  
 
-We have only used the top 5 items by quantity, for the 4 Division’s, (20 items in total) to analyze the forecast results and develop the prescriptive inventory optimization model. We have assumed that this will give us a nearly accurate representation of how the overall data behaves for the remaining SKUs. The forecast models were developed using 80% of data as train set and the remaining 20% was used to test its overall performance. The integer linear programming model was then developed using the forecast results as predicted demand for the last 8 weeks of 2019.  
+In order to analyze the forecast results and develop our prescriptive inventory solution, we have used only the top 5 items by quantity from each divisions (20 items in total). We based this idea off the popular Pareto principle, and we have assumed that this will give us a near accurate representation of the overall data. The forecast models were then developed using 80% of data as the train set and the remaining 20% as the test set. The overall performance of models were compared using the test-set and we have used this half of the data for the inventory model. The inventory optimization model was developed using an Integer Linear Programming algorithm for the last 8 weeks of 2019 (test set).  
 
 
 # 2. Methodology
 
-To develop the forecasting tool for the project, we have used 4 time-series based forecasting techniques, Holt-Winter’s, SARIMA, Prophets, and Random Forrest at 2 levels of aggregation – Division and cluster. The selection of the best Forecast models was determined using Root Mean Square Error (RMSE) and Mean Absolute Percentage Error (MAPE). But since different items have different scales of demand, we have used MAPE as our primary metric for comparison.  
+To develop the forecasting tool for the project, we have used 4 time-series based forecasting techniques; Holt-Winter’s, SARIMA, Prophets, and Random Forrest at 2 levels of aggregation – Division and cluster. For comparing the results, we are using Root Mean Square Error (RMSE) and Mean Absolute Percentage Error (MAPE) as secondary metrics. But since different items have different scales of demand, we have used MAPE as our primary metric for comparison. This is also because MAPE will be easier to explain from a business perspective.  
 
-Before developing the forecast models, data preprocessing and time-series clustering was performed to segregate the Item’s into the 2 level’s aggregated stages that we have mentioned earlier. The aggregated forecasts were then broken down into respective SKUs using a fixed scaling factor and the best results for each SKU based on MAPE were taken as input for the Inventory Optimization model.
+Before developing the forecast models, data pre-processing and time-series clustering was done to group the SKU’s into the 2 levels of aggregation which we have mentioned earlier. The aggregated forecasts were then broken down into their respective SKUs using a fixed scaling factor, and the best results for each SKU (based on MAPE) was taken as input for the Inventory Optimization model.
 
 ## Time-series Clustering
 
-The key idea of clustering is to classify similar data points together to perform further analysis. We are extending the same principle here to time-series data for classifying similar demand patterns into different groups. Since time-series data have a time component, Euclidean distance (ED) might not always be a good measure for calculating similarity. Because it will only calculate the distance between data points at their respective time phase. Therefore, we are using Dynamic time warping (DTW) as our distance metric. DTW can calculate similarity between differently aligned time-series patterns because it calculates the distance along the time dimension using a non-linear warping path.
+The key idea of clustering is to segregate similar data points together to perform further analysis. We are extending the same principle here to time-series data, for grouping SKUs similar demand patterns into different groups. Since time-series data have a time component, Euclidean distance (ED) might not always be a good measure for calculating similarity. Because it will only calculate the distance between data points at their respective time phase. Therefore, we are using Dynamic time warping (DTW) as the alternate distance metric. DTW can calculate similarity between differently aligned time-series patterns because it calculates the distance along the time dimension using a non-linear warping path.
 
 ![Dynamic time warping: non-linear warping path](./Images/dtw_example1.png)
 
-Based on the BTW distance metric, we performed time-series clustering using different techniques, agglomerative clustering using single linkage, agglomerative clustering using ward linkage, and K-Means clustering. Based on the silhouette scores and cluster plots, K-Means clustering was giving the best results. 
+Based on the DTW distance metric, we performed time-series clustering using different techniques: agglomerative clustering using single linkage, agglomerative clustering using ward linkage, and K-Means clustering. Silhouette scores and cluster plots were then drawn to evaluate these clusters.
 
 ![Dendrogram output from Agglomerative Clustering – ward linkage](./Images/agglomerativeClusteringWard.png)
 
 ![a)Elbow Curve- Inertia, b) Silhouette Score for K-Means Clustering](./Images/K-meansElbowSilhouette.PNG) 
 
-From the elbow curves in Figure 3, we decided to choose 4 as the number of clusters for K-Means. Also, since K-means gave us the best result, we decided to use these Cluster IDs as the next level of aggregation for use in the forecast models. 
+From the elbow curves in Figure 3, we chose 4 as the number of clusters for K-Means. Number of clusters for the other clustering techniques were chosen according to their respective Dendrograms. Upon comparison, K-means gave us the best results and we decided to use these Cluster IDs as the second level of aggregation for use in the forecast models. 
 
 ```{r echo=FALSE, fig.cap="Output of Time-Series Clustering (K-Means)", fig.show="hold", out.height="65%"}
 knitr::include_graphics("./Images/kmeans.png")
@@ -59,18 +63,18 @@ knitr::include_graphics("./Images/kmeans.png")
 
 ## Demand Forecasting
 
-In order to forecast the demand for a particular level of aggregation, the first step was to study the different time-series decomposition plots. Because we wanted to analyze how the data was being represented in terms of its time-series components (seasonality and trend). From the decomposition plots, we learned that the data has a seasonal pattern that repeats every 8 weeks. But this may be only prominent because we have just one year of data and if we had more, then yearly seasonal components might just override this effect that is being highlighted. However, for our time-series forecasting techniques that have a seasonal component like SARIMA, we are considering seasonal period to be 8.    
+In order to forecast the demand for a particular level of aggregation, the first step was to study the different time-series decomposition plots.  Decomposition plots helped us analyze how the data was being represented in terms of its time-series components (seasonality and trend). Since we had limited availability of data, the seasonal patterns were difficult to interpret. However, we have decided to add a seasonal period of 13weeks(1 quarter) in our time-series models. This was chosen according to the results we obtained from GridSearch - when optimizing the results for SARIMA, and also based on business logic. This seasonal period may be prominent because we have just one year of data, and if we had more, then yearly seasonal components might just override this effect that is being highlighted. 
 
 ```{r echo=FALSE, fig.cap="Time-Series Decomposition Plots: a) CA-FS, b) Cluster 3", fig.show="hold", out.width="50%"}
-knitr::include_graphics("./Images/Division-CAFS.png")
-knitr::include_graphics("./Images/ClusterID.png")
+knitr::include_graphics("./Images/Division-CARTL.png")
+knitr::include_graphics("./Images/ClusterID_2.png")
 ```
 
 
-We performed the same decomposition analysis for all divisions and cluster levels and learned that there is seasonality and trend in weekly aggregated demands as evident from plots in Fig 5 and Fig 6. In order to capture both these characteristics of time series data, we forecasted the demand using the following time-series models that perform well under similar conditions such as **1. Holt Winter 2. SARIMA, and 3. FB-Prophets**. We then also explored the capability of **4. Random Forest** in time-series based forecast predictions, as our research suggested that it could give reliable results.
+We performed the same decomposition analysis for all divisions and cluster levels, and learned that there is a clear seasonality and trend in weekly aggregated demands as evident from plots in Fig 5. In order to capture both these characteristics of time series data, we forecasted the demand using time-series models that perform well under similar conditions: **1. Holt Winter 2. SARIMA, and 3. FB-Prophets**. We then also explored the capability of **4. Random Forest** in time-series based forecast predictions, as our research suggested that it could give reliable results.
 
 ### a) Holt Winter
-We used this model to capture the suspected seasonality and trend and forecasted demand on that basis. We analyzed the results for both additive and multiplicative holt winter models. We found that the forecast results were better for additive model, hence we used it as our base model for demand forecasting. 
+Holt Winter's model was used to capture the suspected seasonality and trend in the demand patterns. We analyzed the results for both additive and multiplicative holt winter models, and found that the forecast results were better for additive models. Hence we used it as our base model for demand forecasting. 
 
 ### b) SARIMA
 Seasonal Autoregressive Integrated Moving Average (SARIMA) is a very efficient univariate time-series forecasting method. In order to use a SARIMA model, we must determine the values of its parameters (p, d, q) that capture the trend component of the time-series, and parameters (P, D, Q, m) that determine the seasonal components. To find the trend parameters p and q, we used PACF and ACF plots from Figure 6. This was done for all levels of aggregation, and we have found that the values of p and q were the same for all. 
@@ -84,10 +88,10 @@ The value for parameter d - level of trend differencing required to make the dat
 
 ![Stationarity Check - 1st order Differencing](./Images/First Difference.png)
 
-To find the optimal values for seasonality parameters (P,D,Q,m) that gave the best forecast results, we ran a grid search algorithm over a pre-determined range for all levels of aggregation. The hyperparameters that gave the lowest AIC value were found for each of the divisions and clusters. All seven optimal hyperparameters were given as an input to the model function and the demand was forecasted. 
+To find the optimal values for seasonality parameters (P,D,Q,m) that gave the best forecast results, we ran a grid search algorithm over a pre-determined range for all levels of aggregation. The hyperparameters that gave the lowest AIC value were found for each of the divisions and clusters. All seven optimal hyperparameters were then given as input to the model function and the demand was forecasted. 
 
 ### c) Prophet
-Facebook’s open-source time-series forecasting model is another technique that deals well with univariate and multivariate time-series datasets having seasonal and trend components. It is a Generalized additive model (GAM) that is very robust in handling shifts in trends and we also have the flexibility to specify seasonal periods and change points. Since we have noticed that there is a weekly seasonality with periodicity of 8, we have also added that to the FB-prophet models. 
+Facebook’s open-source time-series forecasting model is another technique that deals well with univariate and multivariate time-series datasets having seasonal and trend components. It is a Generalized additive model (GAM), that is very robust in handling shifts in trends and we also have the flexibility to specify seasonal periods and change points. Since we have noticed that there is a weekly seasonality with periodicity of 13, we have also added that to the FB-prophet models. 
 
 ### d) Random Forest
 Random Forest is a very effective ensemble technique used in supervised machine learning problems. However, like any other supervised learning algorithm, it requires a set of input features to make predictions on the target variable. But since ours is a univariate time-series dataset, it does not have any other input variables. Therefore, the data had to be first transformed into a supervised learning problem. This was done by restructuring the dataset to take quantities from previous weeks as input variables to predict the demands for the next week. 
@@ -113,6 +117,7 @@ $$Yi \in [0,1]$$
 $$i\in[1,8] $$
 Since we did not have accurate information about the costs, the prescriptive solution is currently a prototype. However, this is an excellent reference for when the company wishes to implement the solution using the current product costs. 
 
+\newpage
 # 3. Results
 ## Predictive Model:
 
