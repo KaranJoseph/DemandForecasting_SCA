@@ -120,7 +120,7 @@ Since we did not have accurate information about the costs, the prescriptive sol
 
 \newpage
 # 3. Results
-## Predictive:
+## Predictive
 
 Best performing forecasting technique and the corresponding level of aggregation for each SKU was calculated by comparing the results of the forecast models. This analysis was done based on the different MAPE values, the aggregation level and forecasting technique that gave the lowest value for MAPE was selected as the best forecasting model for that SKU. The table below (Figure 10) shows the performance of all forecasting techniques for the selected Item ID. 
 
