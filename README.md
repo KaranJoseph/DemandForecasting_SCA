@@ -1,4 +1,4 @@
-# DemandForecasting and InventoryManagement - Supply Chain Analytics
+# DemandForecasting and InventoryOptimization- Supply Chain Analytics
 
 The goal of the project is to perform demand forecasting at different aggregation levels (product divisions and locations) on the demand data for 2018-2019 of a Food processing Company that sources its products to various distribution centers in the US and Canada. With the improved forecasting models, the company will be able to prepare a better production plan for the next horizon and reduce inventory costs.
 
