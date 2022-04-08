@@ -102,8 +102,8 @@ knitr::include_graphics("./Images/Random Forest.png")
 
 Also, this method of time-series forecasting requires a technique called walk-forward validation for evaluating the results on the test set. Because you cannot use data which you do not have at the time of prediction when forecasting for the next period. 
 
-## Forecast Disaggregation
-Once forecasts were calculated at both division and cluster levels, we disaggregated the data into SKU level by fixed proportions based on contributions of each SKU to Total quantity.  We have only considered one method of disaggregation in this project, but there is a scope to identify and experiment with different disaggregation techniques in future iterations of the project. 
+**Forecast Disaggregation**
+Once the forecasts were calculated at both division and cluster levels, we disaggregated the data to its respective SKU level. This was done using the fixed proportions we calculated based on percentage contributions of each SKU to the total quantity of the aggregation level.  We have only considered one method of disaggregation in this project, but we have identified a scope to experiment with different disaggregation techniques in future extensions of the project. 
 
 ## Inventory Management 
 Reasonable assumptions were made for inventory holding costs and ordering costs for the 20 SKU’s selected to make the inventory optimization models. Integer Linear Programming models (Short path method) were implemented using Pyomo and glpk libraries to find the optimal order quantities and ordering periods for these SKU’s based on the quantity and demand constraints. Since we did not consider capacity constraints, a Big M constraint was placed on the order quantities to achieve optimality. The objective function and the constraints were formulated to minimize the total ordering and holding costs for these products.
