@@ -116,7 +116,7 @@ $$ Q_i+S_{i-1} - S_i =D_i$$
 $$ Q_i <= M*Y_i$$     
 $$Y_i \in [0,1]$$      
 $$i \in [1,8]$$
-Currently, we do not have knowledge regarding the inventory management solution implemented by the company.Hence, we considered lot for lot as a base inventory management model to do a cost benefit analysis of Integer linear programming method.
+Currently, we do not have knowledge regarding the inventory management solution implemented by the company.Hence, we considered lot for lot as a base inventory management model to do a cost benefit analysis of using Integer linear programming method.
 Since we did not have accurate information about the costs, the prescriptive solution is currently a prototype. However, this is an excellent reference for when the company wishes to implement the solution using the current product costs. 
 
 \newpage
