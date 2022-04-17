@@ -107,7 +107,7 @@ Also, this method of time-series forecasting requires a technique called walk-fo
 Once the forecasts were calculated at both division and cluster levels, we disaggregated the data to its respective SKU level. This was done using the fixed proportions we calculated based on percentage contributions of each SKU to the total quantity of the aggregation level.  We have only considered one method of disaggregation in this project, but we have identified a scope to experiment with different disaggregation techniques in future extensions of the project. 
 
 ## Inventory Management 
-Reasonable assumptions were made for inventory holding costs and ordering costs for the 20 SKU’s selected to make the inventory optimization models. Integer Linear Programming models (Short path method) were implemented using Pyomo and glpk libraries to find the optimal order quantities and ordering periods for these SKU’s based on the quantity and demand constraints. Since we did not consider capacity constraints, a Big M constraint was placed on the order quantities to achieve optimality. The objective function and the constraints were formulated to minimize the total ordering and holding costs for these products.
+Reasonable assumptions were made for inventory holding costs and ordering costs for the 20 SKU’s selected to make the inventory optimization models. Integer Linear Programming models were implemented using Pyomo and glpk libraries to find the optimal order quantities and ordering periods for these SKU’s based on the quantity and demand constraints. Since we did not consider capacity constraints, a Big M constraint was placed on the order quantities to achieve optimality. The objective function and the constraints were formulated to minimize the total ordering and holding costs for these products.
 
 $$ Min: Co*\sum_{i=1}^{8} Y_i + Ch*\sum_{i=1}^{8} S_i $$
 **Constraints**
@@ -116,6 +116,7 @@ $$ Q_i+S_{i-1} - S_i =D_i$$
 $$ Q_i <= M*Y_i$$     
 $$Y_i \in [0,1]$$      
 $$i \in [1,8]$$
+Currently, we do not have knowledge regarding the inventory management solution implemented by the company.Hence, we considered lot for lot as a base inventory management model to do a cost benefit analysis of using Integer linear programming method.
 Since we did not have accurate information about the costs, the prescriptive solution is currently a prototype. However, this is an excellent reference for when the company wishes to implement the solution using the current product costs. 
 
 \newpage
@@ -158,11 +159,11 @@ knitr::include_graphics("./Images/Result6.png")
 
 
 # 4. Conclusion
-For quickly analyzing forecast predictions and inventory management solutions by the company, we have also provided a Power BI dashboard which can be extended to all the products manufactured by them. The Dashboard provides the demand planner with the demand forecasting plot of the best performing model by item. A comparison table consisting of aggregation levels and different forecasting models along with their performance measures (RMSE and MAPE) is provided. Inventory management and several other plots depicting the performance of proposed models are presented in the Dashboard for comprehensive analysis. 
+For quickly analyzing forecast predictions and inventory management solutions by the company, we have also provided a Power BI dashboard which can be extended to all the products manufactured by them. The Dashboard provides the demand planner with the demand forecasting plot of the best performing model by item. A comparison table consisting of aggregation levels and different forecasting models along with their performance measures (RMSE and MAPE) is provided. Inventory management and several other plots depicting the performance of proposed models are presented in the Dashboard for comprehensive analysis. The dashboard also presents KPI index to provide an estimate of cost reduction if suggested inventory management solution(MILP) is implemented instead of lot for lot model.
 
-From our analysis, we observed that there is no one fit all forecasting technique that works for every SKUs, but FB-Prophet gave the best result for majority of the SKUs. The different forecasting models can also be combined using an optimal weightage factor to increase the accuracy of prediction even further; but this is beyond the scope of our current project. Moreover, the results also showed that the cluster level aggregation is giving better forecast accuracies. However, we cannot give a conclusive suggestion regarding the best technique and the aggregation level the company should adopt because our models were limited to just a year (52 weeks) of data. To give a more accurate recommendation, we would need to retrain the models with historical data from more years, so that the seasonal patterns and trends can be better represented by the predictive algorithms.  
+From our analysis, we observed that there is no one fit all forecasting technique that works for every SKUs. The different forecasting models can also be combined using an optimal weightage factor to increase the accuracy of prediction even further; but this is beyond the scope of our current project. Moreover, the results also showed that the cluster level aggregation is giving better forecast accuracies. However, we cannot give a conclusive suggestion regarding the best technique and the aggregation level the company should adopt because our models were limited to just a year (52 weeks) of data. To give a more accurate recommendation, we would need to retrain the models with historical data from more years, so that the seasonal patterns and trends can be better represented by the predictive algorithms.  
 
-However, the predictive and prescriptive developed by us, and the dashboard are dynamic and can be easily adopted to include several years of historical data. This demand forecasting and inventory optimization tool we developed will be a great testimony for the company if they wish to implement these solutions on a large scale.  
+However, the predictive and prescriptive models developed by us, and the dashboard are dynamic and can be easily adopted to include several years of historical data. This demand forecasting and inventory optimization tool we developed will be a great testimony for the company if they wish to implement these solutions on a large scale.  
 
 # 5. References
 
@@ -176,3 +177,36 @@ However, the predictive and prescriptive developed by us, and the dashboard are 
 
 •	Random Forest for Time Series Forecasting for Data Science. (2021, June 2). Analytics Vidhya. https://www.analyticsvidhya.com/blog/2021/06/random-forest-for-time-series-forecasting/
 
+\newpage
+
+# 7. Appendix
+
+## Demand Forecasting
+
+**APPENDIX 1: Holt Winter Model**
+
+```{r echo=FALSE,fig.show="hold", fig.align="center"}
+knitr::include_graphics("./Images/1.PNG")
+```
+
+**APPENDIX 2:SARIMAX Model**
+
+```{r echo=FALSE,fig.show="hold", fig.align="center"}
+knitr::include_graphics("./Images/2.PNG")
+```
+
+**APPENDIX 3:PROPHET Model**
+
+```{r echo=FALSE,fig.show="hold", fig.align="center"}
+knitr::include_graphics("./Images/3.PNG")
+```
+
+
+\newpage
+## Inventory Management
+
+**Appendix-7: Inventory Optimization function**
+
+```{r echo=FALSE,fig.show="hold", fig.align="center"}
+knitr::include_graphics("./Images/4.PNG")
+```
