@@ -27,24 +27,24 @@ knitr::opts_chunk$set(fig.pos = 'H')
 \newpage
 # 1. Introduction
 
-The goal of the project is to develop a demand forecasting tool to find the best levels of aggregation and the best forecasting technique that can be used to predict weekly demands for a leading Food Processing Company based in North America. The company has several warehouses across USA and Canada, which they use to source retailers and distribution centers across North America. As a complementary service, we have also developed an inventory optimization tool using Integer Linear Programming. Our aim is to improve their production plan for the coming horizons by giving them better forecasts and streamline their inventory levels. 
+The goal of the project is to develop a demand forecasting tool to find the best levels of aggregation and the best forecasting technique that can be used to predict weekly demands for a leading Food Processing Company based in North America. The company has several warehouses across USA and Canada, which they use to source retailers and distribution centers across North America. As a complementary service, we have also developed an inventory optimization tool using Integer Linear Programming. Our aim is to improve their production plan for the coming horizons by giving them better forecasts and streamlining their inventory levels. 
 
-The company have given us a partial database, with information concerning the actual demand history (univariate time-series dataset) for all the products manufactured in the year 2019. The data at hand is composed of 2407 SKUs, and each of these items fall into one of 4 unique production division categories (CA-FS, CA-RTL, US-FS, and US-RTL). To decrease the variability in the dataset and computational complexity, the company suggested developing forecast models at aggregated levels and then later disaggregate them to get individual product demands for each SKU’s.  
+The company has given us a partial database, with information concerning the actual demand history (univariate time-series dataset) for all the products manufactured in the year 2019. The data at hand is composed of 2407 SKUs, and each of these items falls into one of 4 unique production division categories (CA-FS, CA-RTL, US-FS, and US-RTL). To decrease the variability in the dataset and computational complexity, the company suggested developing forecast models at aggregated levels and then later disaggregating them to get individual product demands for each SKU.  
 
-Division level category assignment is being made by the company based on business intuition and product sense. But since SKU’s having different trends and seasonality can get aggregated together under the same division, we believe this will decrease the overall influence of the time series components and thereby reducing its forecasting power. From our research we learned that time-series clustering can be an alternative solution to this problem, because this enabled us to group together items having similar demand patterns. Therefore, we are performing demand forecasting on two different levels of aggregation – **1) Division level and 2) Cluster level** – for building our predictive models.  
+Division level category assignment is being made by the company based on business intuition and product sense. But since SKUs having different trends and seasonality can get aggregated together under the same division, we believe this will decrease the overall influence of the time series components and thereby reduce its forecasting power. From our research, we learned that time-series clustering can be an alternative solution to this problem because this enabled us to group together items having similar demand patterns. Therefore, we are performing demand forecasting on two different levels of aggregation – **1) Division level and 2) Cluster level** – for building our predictive models.  
 
-In order to analyze the forecast results and develop our prescriptive inventory solution, we have used only the top 5 items by quantity from each divisions (20 items in total). We based this idea off the popular Pareto principle, and we have assumed that this will give us a near accurate representation of the overall data. The forecast models were then developed using 80% of data as the train set and the remaining 20% as the test set. The overall performance of models were compared using the test-set and we have used this half of the data for the inventory model. The inventory optimization model was developed using an Integer Linear Programming algorithm for the last 8 weeks of 2019 (test set).  
+In order to analyze the forecast results and develop our prescriptive inventory solution, we have used only the top 5 items by quantity from each division (20 items in total). We based this idea on the popular Pareto principle, and we have assumed that this will give us a near accurate representation of the overall data. The forecast models were then developed using 80% of data as the train set and the remaining 20% as the test set. The overall performance of models was compared using the test-set and we have used this half of the data for the inventory model. The inventory optimization model was developed using an Integer Linear Programming algorithm for the last 8 weeks of 2019 (test set).    
 
 
 # 2. Methodology
 
-To develop the forecasting tool for the project, we have used 4 time-series based forecasting techniques; Holt-Winter’s, SARIMA, Prophets, and Random Forrest at 2 levels of aggregation – Division and cluster. For comparing the results, we are using Root Mean Square Error (RMSE) and Mean Absolute Percentage Error (MAPE) as secondary metrics. But since different items have different scales of demand, we have used MAPE as our primary metric for comparison. This is also because MAPE will be easier to explain from a business perspective.  
+To develop the forecasting tool for the project, we have used 4 time-series-based forecasting techniques; Holt-Winter’s, SARIMA, Prophets, and Random Forrest at 2 levels of aggregation – Division and cluster. For comparing the results, we are mainly using Root Mean Square Error (RMSE) and Mean Absolute Percentage Error (MAPE). But since different items have different scales of demand, we have used MAPE as our primary metric for comparison. . In order to accommodate the use of RMSE, we would have to scale the quantities for each SKU and transform it back for the inventory model. This factor of complexity was also a reason why we had decided to avoid only relying on RMSE values. Other metrics such as Cov can be used here too, but we are using MAPE because it will be easier to explain from a business perspective.
 
-Before developing the forecast models, data pre-processing and time-series clustering was done to group the SKU’s into the 2 levels of aggregation which we have mentioned earlier. The aggregated forecasts were then broken down into their respective SKUs using a fixed scaling factor, and the best results for each SKU (based on MAPE) was taken as input for the Inventory Optimization model.
+Before developing the forecast models, data pre-processing and time-series clustering was done to group the SKUs into the 2 levels of aggregation which we mentioned earlier. The aggregated forecasts were then broken down into their respective SKUs using a fixed scaling factor, and the best results for each SKU (based on MAPE) were taken as input for the Inventory Optimization model.
 
 ## Time-series Clustering
 
-The key idea of clustering is to segregate similar data points together to perform further analysis. We are extending the same principle here to time-series data, for grouping SKUs similar demand patterns into different groups. Since time-series data have a time component, Euclidean distance (ED) might not always be a good measure for calculating similarity. Because it will only calculate the distance between data points at their respective time phase. Therefore, we are using Dynamic time warping (DTW) as the alternate distance metric. DTW can calculate similarity between differently aligned time-series patterns because it calculates the distance along the time dimension using a non-linear warping path.
+The key idea of clustering is to segregate similar data points together to perform further analysis. We are extending the same principle here to time-series data, for grouping SKUs with similar demand patterns into different groups. Since time-series data have a time component, Euclidean distance (ED) might not always be a good measure for calculating similarity because it will only calculate the distance between data points at their respective time phase. Therefore, we are using Dynamic time warping (DTW) as the alternate distance metric. DTW can calculate the similarity between differently aligned time-series patterns because it calculates the distance along the time dimension using a non-linear warping path.
 
 ![Dynamic time warping: non-linear warping path](./Images/dtw_example1.png)
 
@@ -54,7 +54,7 @@ Based on the DTW distance metric, we performed time-series clustering using diff
 
 ![a)Elbow Curve- Inertia, b) Silhouette Score for K-Means Clustering](./Images/K-meansElbowSilhouette.PNG) 
 
-From the elbow curves in Figure 3, we chose 4 as the number of clusters for K-Means. Number of clusters for the other clustering techniques were chosen according to their respective Dendrograms. Upon comparison, K-means gave us the best results and we decided to use these Cluster IDs as the second level of aggregation for use in the forecast models. 
+From the elbow curves in Figure 3, we chose 4 as the number of clusters for K-Means. The number of clusters for the other clustering techniques was chosen according to their respective Dendrograms. Upon comparison, K-means gave us the best results and we decided to use these Cluster IDs as the second level of aggregation for use in the forecast models.
 
 ```{r echo=FALSE, fig.cap="Output of Time-Series Clustering (K-Means)", fig.show="hold", out.height="65%"}
 knitr::include_graphics("./Images/kmeans.png")
@@ -63,7 +63,7 @@ knitr::include_graphics("./Images/kmeans.png")
 
 ## Demand Forecasting
 
-In order to forecast the demand for a particular level of aggregation, the first step was to study the different time-series decomposition plots.  Decomposition plots helped us analyze how the data was being represented in terms of its time-series components (seasonality and trend). Since we had limited availability of data, the seasonal patterns were difficult to interpret. However, we have decided to add a seasonal period of 13weeks(1 quarter) in our time-series models. This was chosen according to the results we obtained from GridSearch - when optimizing the results for SARIMA, and also based on business logic. This seasonal period may be prominent because we have just one year of data, and if we had more, then yearly seasonal components might just override this effect that is being highlighted. 
+Before developing the demand forecast models, our first step was to study the different time-series decomposition plots. The decomposition plots helped us understand how the data is represented by its time-series components (seasonality and trend). Since we had limited availability of data, the seasonal patterns were difficult to interpret. However, we have decided to add a seasonal period of 13weeks(1 quarter) in our time-series models. This was chosen according to the results obtained from GridSearch - when optimizing the parameters for SARIMA, and also based on business logic. This seasonal period may be prominent only because we have just one year of data, and the yearly seasonal components might just override this effect if we consider more data. 
 
 ```{r echo=FALSE, fig.cap="Time-Series Decomposition Plots: a) CA-FS, b) Cluster 3", fig.show="hold", out.width="50%"}
 knitr::include_graphics("./Images/Division-CARTL.png")
@@ -71,43 +71,43 @@ knitr::include_graphics("./Images/ClusterID_2.png")
 ```
 
 
-We performed the same decomposition analysis for all divisions and cluster levels, and learned that there is a clear seasonality and trend in weekly aggregated demands as evident from plots in Fig 5. In order to capture both these characteristics of time series data, we forecasted the demand using time-series models that perform well under similar conditions: **1. Holt Winter 2. SARIMA, and 3. FB-Prophets**. We then also explored the capability of **4. Random Forest** in time-series based forecast predictions, as our research suggested that it could give reliable results.
+We performed the same decomposition analysis for all divisions and cluster levels and learned that there is a clear seasonality and trend in weekly aggregated demands as evident from plots in Fig 5. In order to capture both these characteristics of time series data, we forecasted the demand using time-series models that perform well under similar conditions: **1. Holt Winter 2. SARIMA, and 3. FB-Prophets**. We then also explored the capability of **4. Random Forest** in time-series-based forecast predictions. Our research suggested that they could give reliable results in a time-series setting.
 
 ### a) Holt Winter
-Holt Winter's model was used to capture the suspected seasonality and trend in the demand patterns. We analyzed the results for both additive and multiplicative holt winter models, and found that the forecast results were better for additive models. Hence we used it as our base model for demand forecasting. 
+Holt Winter's model was used to capture the suspected seasonality and trend in the demand patterns. We analyzed the results for both additive and multiplicative holt winter models and found that the forecast results were better for additive models. Hence we used it as our base model for demand forecasting. 
 
 ### b) SARIMA
-Seasonal Autoregressive Integrated Moving Average (SARIMA) is a very efficient univariate time-series forecasting method. In order to use a SARIMA model, we must determine the values of its parameters (p, d, q) that capture the trend component of the time-series, and parameters (P, D, Q, m) that determine the seasonal components. To find the trend parameters p and q, we used PACF and ACF plots from Figure 6. This was done for all levels of aggregation, and we have found that the values of p and q were the same for all. 
+Seasonal Autoregressive Integrated Moving Average (SARIMA) is a very efficient univariate time-series forecasting method. In order to use a SARIMA model, we must determine the values of its parameters (p, d, q) that capture the trend component of the time series, and parameters (P, D, Q, m) that determine the seasonal components. To find the trend parameters p and q, we used PACF and ACF plots from Figure 6. This was done for all levels of aggregation, and we have found that the values of p and q were the same for all. 
 
 ```{r echo=FALSE, fig.cap="a) ACF Plot, b) PACF Plot", fig.show="hold", out.width="50%"}
 knitr::include_graphics("./Images/ACF_plot.png")
 knitr::include_graphics("./Images/pacf_plot.png")
 ```
 
-The value for parameter d - level of trend differencing required to make the data stationary was determined from the differencing plot in Fig 7. Stationarity of the time-series datasets were then confirmed using Augmented Dickey fuller test where we got a significant p-value for first difference. From these verifications, we concluded d=1. This was also confirmed to be the same for all levels of aggregation. 
+The value for parameter d - level of trend differencing required to make the data stationary was determined from the differencing plot in Fig 7. The stationarity of the time-series datasets was then confirmed using the Augmented Dickey fuller test where we got a significant p-value for the first difference. From these verifications, we concluded d=1. This was also confirmed to be the same for all levels of aggregation.  
 
 ![Stationarity Check - 1st order Differencing](./Images/First Difference.png)
 
-To find the optimal values for seasonality parameters (P,D,Q,m) that gave the best forecast results, we ran a grid search algorithm over a pre-determined range for all levels of aggregation. The hyperparameters that gave the lowest AIC value were found for each of the divisions and clusters. All seven optimal hyperparameters were then given as input to the model function and the demand was forecasted. 
+To find the optimal values for seasonality parameters (P, D, Q, m) that gave the best forecast results, we ran a grid search algorithm over a pre-determined range for all levels of aggregation. The hyperparameters that gave the lowest AIC value were found for each of the divisions and clusters. All seven optimal hyperparameters were then given as input to the model function and the demand was forecasted. 
 
 ### c) Prophet
-Facebook’s open-source time-series forecasting model is another technique that deals well with univariate and multivariate time-series datasets having seasonal and trend components. It is a Generalized additive model (GAM), that is very robust in handling shifts in trends and we also have the flexibility to specify seasonal periods and change points. Since we have noticed that there is a weekly seasonality with periodicity of 13, we have also added that to the FB-prophet models. 
+Facebook’s open-source time-series forecasting model is another technique that deals well with univariate and multivariate time-series datasets having seasonal and trend components. It is a Generalized additive model (GAM), that is very robust in handling shifts in trends and we also have the flexibility to specify seasonal periods and change points. Since we have noticed that there is a weekly seasonality with a periodicity of 13, we have also added that to the FB-prophet models. 
 
 ### d) Random Forest
 Random Forest is a very effective ensemble technique used in supervised machine learning problems. However, like any other supervised learning algorithm, it requires a set of input features to make predictions on the target variable. But since ours is a univariate time-series dataset, it does not have any other input variables. Therefore, the data had to be first transformed into a supervised learning problem. This was done by restructuring the dataset to take quantities from previous weeks as input variables to predict the demands for the next week. 
 
-```{r echo=FALSE, fig.cap="Time-Series transformation: Sliding window representation", fig.show="hold", out.height="65%"}
+```{r echo=FALSE, fig.cap="Time-Series transformation: Sliding window representation", fig.show="hold", out.height="65%", out.width="100%"}
 knitr::include_graphics("./Images/Random Forest.png")
 ```
 
-Also, this method of time-series forecasting requires a technique called walk-forward validation for evaluating the results on the test set. Because you cannot use data which you do not have at the time of prediction when forecasting for the next period. 
+This method of time-series forecasting required a technique called walk-forward validation for evaluating the results on the test set; because one cannot use data that you do not have at the time of prediction when forecasting for the next period.  
 
 **Forecast Disaggregation**  
 
-Once the forecasts were calculated at both division and cluster levels, we disaggregated the data to its respective SKU level. This was done using the fixed proportions we calculated based on percentage contributions of each SKU to the total quantity of the aggregation level.  We have only considered one method of disaggregation in this project, but we have identified a scope to experiment with different disaggregation techniques in future extensions of the project. 
+Once the forecasts were calculated at both division and cluster levels, we disaggregated the data to its respective SKU level. This was done using the fixed proportions we calculated based on the percentage contributions of each SKU to the total quantity of the aggregation level. We have considered only one method of disaggregation in this project, but we have identified a scope to experiment with different disaggregation techniques in future extensions of the project. 
 
 ## Inventory Management 
-Reasonable assumptions were made for inventory holding costs and ordering costs for the 20 SKU’s selected to make the inventory optimization models. Integer Linear Programming models were implemented using Pyomo and glpk libraries to find the optimal order quantities and ordering periods for these SKU’s based on the quantity and demand constraints. Since we did not consider capacity constraints, a Big M constraint was placed on the order quantities to achieve optimality. The objective function and the constraints were formulated to minimize the total ordering and holding costs for these products.
+Reasonable assumptions were made for inventory holding costs and ordering costs for the 20 SKUs selected to make the inventory optimization models. Integer Linear Programming models were implemented using Pyomo and glpk libraries to find the optimal order quantities and ordering periods for these SKUs based on the quantity and demand constraints. Since we did not consider capacity constraints, a Big M constraint was placed on the order quantities to achieve optimality. The objective function and the constraints were formulated to minimize the total ordering and holding costs for these products.
 
 $$ Min: Co*\sum_{i=1}^{8} Y_i + Ch*\sum_{i=1}^{8} S_i $$
 **Constraints**
@@ -116,54 +116,54 @@ $$ Q_i+S_{i-1} - S_i =D_i$$
 $$ Q_i <= M*Y_i$$     
 $$Y_i \in [0,1]$$      
 $$i \in [1,8]$$
-Currently, we do not have knowledge regarding the inventory management solution implemented by the company.Hence, we considered lot for lot as a base inventory management model to do a cost benefit analysis of using Integer linear programming method.
-Since we did not have accurate information about the costs, the prescriptive solution is currently a prototype. However, this is an excellent reference for when the company wishes to implement the solution using the current product costs. 
+Currently, we do not have any knowledge regarding the inventory management solution implemented by the company. Hence, we considered a Lot for Lot model as a base inventory management model to calculate the cost savings of using the Integer linear programming method.
+Since we did not have accurate information about the costs, the prescriptive solution is currently a prototype. However, this is an excellent reference for when the company wishes to implement the solution using the current production costs.
 
 \newpage
 # 3. Results
 ## Predictive
 
-Best performing forecasting technique and the corresponding level of aggregation for each SKU was calculated by comparing the results of the forecast models. This analysis was done based on the different MAPE values, the aggregation level and forecasting technique that gave the lowest value for MAPE was selected as the best forecasting model for that SKU. The table below (Figure 10) shows the performance of all forecasting techniques for the selected Item ID. 
+The best-performing forecasting technique and the corresponding level of aggregation for each SKU were chosen by comparing the results of the forecast models. This analysis was done based on the different MAPE values; the aggregation level and forecasting technique that gave the lowest value for MAPE was selected as the best forecasting model for that SKU. The table below (Figure 10) shows the performance of all forecasting techniques for the selected Item ID.  
 
-```{r echo=FALSE, fig.cap="SKU level forecast results", fig.show="hold", out.height="35%"}
+```{r echo=FALSE, fig.cap="SKU level forecast results", fig.show="hold", out.height="35%", out.width="100%"}
 knitr::include_graphics("./Images/Result1.png")
 ```
-From the table in Figure 10, we can propose that for Item ID-1267128, the best performing forecast model is Holt Winter when forecasted at division level aggregation. Similar analysis was carried out for all the SKUs considered in the scope of study and the following results table consolidates the best techniques identified for each SKU. 
+From the table in Figure 10, we can propose that for Item ID-1267128, the best-performing forecast model is Holt Winter when forecasted at division level aggregation. A similar analysis was carried out for all the SKUs considered in the scope of study and the following results table consolidates the best techniques identified for each SKU.  
 
-```{r echo=FALSE, fig.cap="Best performing model for each SKUs", fig.show="hold", out.height="65%"}
+```{r echo=FALSE, fig.cap="Best performing model for each SKUs", fig.show="hold", out.height="65%", out.width="100%"}
 knitr::include_graphics("./Images/Result2.png")
 ```
 
 
-For the scope of our study, we have only chosen 20 items; top 5 items based on quantity from each of the 4 divisions (US FS, US RTL, CA FS, and CA RTL). We found out that amongst all the forecasting methods used by us, FB-Prophet gave the most accurate results. But this can change if you retrain the models with more data. Also, aggregating the data by cluster level resulted in better forecasts for 65% of items, as represented by this donut chart below. 
+For the scope of our study, we have only chosen 20 items; the top 5 items are based on quantity from each of the 4 divisions (US FS, US RTL, CA FS, and CA RTL). We found out that amongst all the forecasting methods used by us, FB-Prophet gave the most accurate results. But this can change if you retrain the models with more data. Also, aggregating the data by cluster level resulted in better forecasts for 65% of items, as represented by this donut chart below. 
 
 ![Number of items as per aggregation levels](./Images/Result3.png)
 
-We then examined whether the predicted demands from the best performing models can capture the time series elements for our targeted SKUs. The demand forecasting plots at SKU level, similar to those below, were plotted to study results from the predictive models. 
+We then examined whether the predicted demands from the best-performing models can capture the time series elements for our targeted SKUs. The demand forecasting plots at the SKU level, similar to those below, were plotted to study results from the predictive models. 
 
-```{r echo=FALSE, fig.cap="SKU level Demand Forecasting plot for best performing model of two items", fig.show="hold", out.height="65%"}
+```{r echo=FALSE, fig.cap="SKU level Demand Forecasting plot for best performing model of two items", fig.show="hold", out.height="65%", out.width="100%"}
 knitr::include_graphics("./Images/Result4.png")
 ```
-We can see from the line plots in Figure 12 that the predictions for the test data are closely representing the actual demand for that period and are reasonably accounting for both the trend and seasonality in the demand patterns. 
+As we can see from the line plots in Figure 12, the predictions for the test data are closely representing the actual demand for that period and are reasonably accounting for both the trend and seasonality in the demand patterns. 
 
 ## Prescriptive
 Inventory optimization models were developed using the forecasted demands from predictive models as input for each of the 20 SKUs. Since the results are based on our inventory and holding cost assumptions, and we do not have information on the company's current holding policies, we have refrained from making cost-benefit recommendations from the prescriptive tool. However, we have made the tool in such a way that these cost values can be easily adjusted for each SKU when the company decides to test its performance. 
 
 Based on the current inputs, a sample output from the inventory model is shown in Figure 13.
-```{r echo=FALSE, fig.cap="Inventory Management results table", fig.show="hold", out.height="65%"}
+```{r echo=FALSE, fig.cap="Inventory Management results table", fig.show="hold", out.height="65%", out.width="100%"}
 knitr::include_graphics("./Images/Result5.png")
 ```
-```{r echo=FALSE, fig.cap="Inventory Management Plot", fig.show="hold", out.height="65%"}
+```{r echo=FALSE, fig.cap="Inventory Management Plot", fig.show="hold", out.height="65%", out.width="100%"}
 knitr::include_graphics("./Images/Result6.png")
 ```
 
 
 # 4. Conclusion
-For quickly analyzing forecast predictions and inventory management solutions by the company, we have also provided a Power BI dashboard which can be extended to all the products manufactured by them. The Dashboard provides the demand planner with the demand forecasting plot of the best performing model by item. A comparison table consisting of aggregation levels and different forecasting models along with their performance measures (RMSE and MAPE) is provided. Inventory management and several other plots depicting the performance of proposed models are presented in the Dashboard for comprehensive analysis. The dashboard also presents a KPI index to provide an estimate of cost reduction if suggested inventory management solution(MILP) is implemented instead of a lot for lot model.
+For quickly analyzing forecast predictions and inventory management solutions by the company, we have also provided a Power BI dashboard which can be extended to all the products manufactured by them. The Dashboard provides the demand planner with the demand forecasting plot of the best-performing model by item. A comparison table consisting of aggregation levels and different forecasting models along with their performance measures (RMSE and MAPE) is provided. Inventory management and several other plots depicting the performance of proposed models are presented in the Dashboard for comprehensive analysis. The dashboard also presents a KPI index to provide an estimate of cost reduction if the suggested inventory management solution(MILP) is implemented instead of a Lot for Lot model.
 
-From our analysis, we observed that there is no one fit all forecasting technique that works for every SKUs. The different forecasting models can also be combined using an optimal weightage factor to increase the accuracy of prediction even further; but this is beyond the scope of our current project. Moreover, the results also showed that the cluster level aggregation is giving better forecast accuracies. However, we cannot give a conclusive suggestion regarding the best technique and the aggregation level the company should adopt because our models were limited to just a year (52 weeks) of data. To give a more accurate recommendation, we would need to retrain the models with historical data from more years, so that the seasonal patterns and trends can be better represented by the predictive algorithms.  
+From our analysis, we observed that there is no one-size-fits model that works for any SKU. There is also potential for the different forecasting models to be combined using an optimal weightage factor for increasing the accuracy of prediction even further, but this is beyond the scope of our current project. However, the results showed that the cluster level aggregation gives better forecast accuracies. But we cannot give a conclusive suggestion regarding the best technique and the aggregation levels because our models were limited to just one year (52 weeks) of data. To give a more accurate recommendation, we would need to retrain the models with historical data from more years. This would enable our predictive models to better represent the seasonal and trend patterns in the data.
 
-The predictive and prescriptive models developed by us, and the dashboard are dynamic and can be easily adopted to include several years of historical data. This demand forecasting and inventory optimization tool we developed will be a great testimony for the company if they wish to implement these solutions on a large scale.  
+The predictive and prescriptive models developed in this project, and the Power-BI dashboard are dynamic and can be easily adapted to include several years of historical data and more complex constraints. This demand forecasting and inventory optimization tool we developed will be a great reference for the company if they wish to implement these solutions on a large scale.  
 
 # 5. References
 
@@ -179,34 +179,57 @@ The predictive and prescriptive models developed by us, and the dashboard are dy
 
 \newpage
 
-# 7. Appendix
+# 6. Appendix
+
+## Time Series Clustering
+
+**APPENDIX 1: Kmeans Clustering**
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
+knitr::include_graphics("./Images/5 - Kmeans.PNG")
+```
+\newpage
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
+knitr::include_graphics("./Images/6 - ClusterPlot.PNG")
+```
+\newpage
 
 ## Demand Forecasting
+**APPENDIX 2: Holt Winter Model**
 
-**APPENDIX 1: Holt Winter Model**
-
-```{r echo=FALSE,fig.show="hold", fig.align="center"}
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
 knitr::include_graphics("./Images/1.PNG")
 ```
 
-**APPENDIX 2:SARIMAX Model**
+**APPENDIX 3:SARIMAX Model**
 
-```{r echo=FALSE,fig.show="hold", fig.align="center"}
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
 knitr::include_graphics("./Images/2.PNG")
 ```
 
-**APPENDIX 3:PROPHET Model**
+**APPENDIX 4:PROPHET Model**
 
-```{r echo=FALSE,fig.show="hold", fig.align="center"}
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
 knitr::include_graphics("./Images/3.PNG")
 ```
+\newpage
+**APPENDIX 5:RANDOM FOREST Model**
 
-
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
+knitr::include_graphics("./Images/8 - RF Prep.PNG")
+```
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
+knitr::include_graphics("./Images/7 - RF Pred.PNG")
+```
 \newpage
 ## Inventory Management
 
-**Appendix-7: Inventory Optimization function**
+**APPENDIX 6: Inventory Optimization function**
 
-```{r echo=FALSE,fig.show="hold", fig.align="center"}
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
 knitr::include_graphics("./Images/4.PNG")
+```
+\newpage
+**APPENDIX 7: Dashboard**
+```{r echo=FALSE,fig.show="hold", fig.align="center", out.width="100%"}
+knitr::include_graphics("./Images/9 - Dashboard.PNG")
 ```
