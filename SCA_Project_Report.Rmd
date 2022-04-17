@@ -123,7 +123,7 @@ Since we did not have accurate information about the costs, the prescriptive sol
 # 3. Results
 ## Predictive
 
-The best-performing forecasting technique and the corresponding level of aggregation for each SKU were chosen by comparing the results of the forecast models. This analysis was done based on the different MAPE values; the aggregation level and forecasting technique that gave the lowest value for MAPE was selected as the best forecasting model for that SKU. The table below (Figure 10) shows the performance of all forecasting techniques for the selected Item ID.  
+The best-performing forecasting technique and the corresponding level of aggregation for each SKU were chosen by comparing the results of the forecast models. This analysis was done based on the different MAPE values; the aggregation level and forecasting technique that gave the lowest value for MAPE was selected as the best forecasting model for that SKU. The table below (Figure 9) shows the performance of all forecasting techniques for the selected Item ID.  
 
 ```{r echo=FALSE, fig.cap="SKU level forecast results", fig.show="hold", out.height="35%", out.width="100%"}
 knitr::include_graphics("./Images/Result1.png")
@@ -135,7 +135,7 @@ knitr::include_graphics("./Images/Result2.png")
 ```
 
 
-For the scope of our study, we have only chosen 20 items; the top 5 items are based on quantity from each of the 4 divisions (US FS, US RTL, CA FS, and CA RTL). We found out that amongst all the forecasting methods used by us, FB-Prophet gave the most accurate results. But this can change if you retrain the models with more data. Also, aggregating the data by cluster level resulted in better forecasts for 65% of items, as represented by this donut chart below. 
+For the scope of our study, we have only chosen 20 items; top 5 items based on quantity from each of the 4 divisions (US FS, US RTL, CA FS, and CA RTL). We found out that all the forecasting methods used in the project were giving decent results, and the cluster level aggregation resulted in better forecasts for 65% of items, as represented by the donut chart below. But this may change if you retrain the models with more data.
 
 ![Number of items as per aggregation levels](./Images/Result3.png)
 
@@ -147,7 +147,7 @@ knitr::include_graphics("./Images/Result4.png")
 As we can see from the line plots in Figure 12, the predictions for the test data are closely representing the actual demand for that period and are reasonably accounting for both the trend and seasonality in the demand patterns. 
 
 ## Prescriptive
-Inventory optimization models were developed using the forecasted demands from predictive models as input for each of the 20 SKUs. Since the results are based on our inventory and holding cost assumptions, and we do not have information on the company's current holding policies, we have refrained from making cost-benefit recommendations from the prescriptive tool. However, we have made the tool in such a way that these cost values can be easily adjusted for each SKU when the company decides to test its performance. 
+Inventory optimization models were developed using the forecasted demands from predictive models as input for each of the 20 SKUs. Since the results are based on our inventory and holding cost assumptions, and we do not have information on the company's current holding policies, we have refrained from making recommendations based on cost benefits from the prescriptive tool. However, we have made the tool in such a way that these cost values can be easily adjusted for each SKU when the company decides to test its performance. Also, we have added the costs calculated from a Lot for Lot model as a reference to compare the results of our inventory solution.
 
 Based on the current inputs, a sample output from the inventory model is shown in Figure 13.
 ```{r echo=FALSE, fig.cap="Inventory Management results table", fig.show="hold", out.height="65%", out.width="100%"}
@@ -157,13 +157,13 @@ knitr::include_graphics("./Images/Result5.png")
 knitr::include_graphics("./Images/Result6.png")
 ```
 
+To quickly analyze the forecast predictions and inventory management solution, we have also provided a Power BI dashboard that can be filtered by the SKU of choice. The Dashboard can provide the demand planner with a lot of elements that can ease their planning process; such as: a demand forecasting plot of the best-performing model by item, a performance matrix comprising the different aggregation levels and forecasting models, an Inventory Management plot for the proposed MILP solution, and a KPI index to provide an estimate of cost reduction if the suggested inventory management solution(MILP) is implemented instead of a Lot for Lot model.
 
 # 4. Conclusion
-For quickly analyzing forecast predictions and inventory management solutions by the company, we have also provided a Power BI dashboard which can be extended to all the products manufactured by them. The Dashboard provides the demand planner with the demand forecasting plot of the best-performing model by item. A comparison table consisting of aggregation levels and different forecasting models along with their performance measures (RMSE and MAPE) is provided. Inventory management and several other plots depicting the performance of proposed models are presented in the Dashboard for comprehensive analysis. The dashboard also presents a KPI index to provide an estimate of cost reduction if the suggested inventory management solution(MILP) is implemented instead of a Lot for Lot model.
 
 From our analysis, we observed that there is no one-size-fits model that works for any SKU. There is also potential for the different forecasting models to be combined using an optimal weightage factor for increasing the accuracy of prediction even further, but this is beyond the scope of our current project. However, the results showed that the cluster level aggregation gives better forecast accuracies. But we cannot give a conclusive suggestion regarding the best technique and the aggregation levels because our models were limited to just one year (52 weeks) of data. To give a more accurate recommendation, we would need to retrain the models with historical data from more years. This would enable our predictive models to better represent the seasonal and trend patterns in the data.
 
-The predictive and prescriptive models developed in this project, and the Power-BI dashboard are dynamic and can be easily adapted to include several years of historical data and more complex constraints. This demand forecasting and inventory optimization tool we developed will be a great reference for the company if they wish to implement these solutions on a large scale.  
+The predictive and prescriptive models developed in this project, and the Power-BI dashboard are dynamic and can be easily adapted to include several years of historical data and more complex constraints. This demand forecasting and inventory optimization tool we developed will be a great reference for the company if they wish to implement these solutions on a larger scale.  
 
 # 5. References
 
