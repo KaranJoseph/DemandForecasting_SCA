@@ -1,4 +1,4 @@
-# DemandForecasting and InventoryOptimization- Supply Chain Analytics
+# Demand Forecasting and Inventory Optimization
 
 The goal of the project is to develop a demand forecasting tool to find the best levels of aggregation and the best forecasting technique that can be used to predict weekly demands for a leading Food Processing Company based in North America. The company has several warehouses across USA and Canada, which they use to source retailers and distribution centers across North America. As a complementary service, we have also developed an inventory optimization tool using Integer Linear Programming. Our aim is to improve their production plan for the coming horizons by giving them better forecasts and streamline their inventory levels. 
 
